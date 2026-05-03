@@ -99,12 +99,12 @@ pip install -r requirements.txt
 
 3. **Download pre-trained models** (See [Model Files](#-model-files) section below)
 ```bash
-python download_models.py
+python download_model.py
 ```
 
-4. **Run the script**
+4. **Run the web app**
 ```bash
-python app.py
+streamlit run app.py
 ```
 
 That's it! You're ready to generate recipes from food images! 🎉
@@ -119,7 +119,7 @@ That's it! You're ready to generate recipes from food images! 🎉
 
 **Option 1: Automatic Download (Recommended)**
 ```bash
-python download_models.py
+python download_model.py
 ```
 
 **Option 2: Manual Download**
@@ -137,20 +137,17 @@ inverse-cooking/
 ├── best_model.pth                ✅
 ├── vocab.pkl                     ✅
 ├── inverse-cooking.py
-├── download_models.py
+├── download_model.py
+├── app.py
 ├── requirements.txt
-├── README.md
-└── image
+└── README.md
 ```
 
 ### Alternative: Train Your Own Models
 
-If you prefer to train from scratch instead of using pre-trained weights:
+If you prefer to train from scratch instead of using pre-trained weights, you can run the training script:
 ```bash
-
-jupyter notebook inverse-cooking.ipynb
-
-python train.py --epochs 15 --batch-size 32 --lr 3e-4
+python inverse-cooking.py
 ```
 
 Training takes approximately 1 hour on Tesla T4 GPU and use kaggle or colab for the T4 GPU.
@@ -162,18 +159,15 @@ Training takes approximately 1 hour on Tesla T4 GPU and use kaggle or colab for 
 ### Quick Inference
 
 ```python
-from model import InverseCookingModel, generate_recipe
-import torch
+from app import load_model, generate_recipe
 from PIL import Image
 
-# Load trained model
-model = InverseCookingModel(embed_size=256, vocab_size=8215, ...)
-model.load_state_dict(torch.load('best_model.pth'))
-model.eval()
+# Load trained model and vocabulary
+model, vocab, device = load_model()
 
 # Generate recipe from image
-image_path = 'test_images/pizza.jpg'
-recipe = generate_recipe(image_path, model, vocab, transform, device)
+image = Image.open('your_image.jpg')
+recipe = generate_recipe(image, model, vocab, device)
 print(recipe)
 ```
 
@@ -239,16 +233,13 @@ Trainable Parameters: 7,042,815
 
 ```
 inverse-cooking/
-├── inverse-cooking.py      # Main training notebook
-├── model.py                   # Model architecture
-├── download_models.py         # Script to download pre-trained models
+├── app.py                     # Streamlit web application
+├── inverse-cooking.py         # Main training script
+├── download_model.py          # Script to download pre-trained models
 ├── requirements.txt           # Python dependencies
 ├── best_model.pth             # Trained model weights (download required)
 ├── vocab.pkl                  # Vocabulary object (download required)
-├── README.md                  # This file
-└── images/                    # Sample images and results
-    ├── architecture.png
-    └── training_history.png
+└── README.md                  # This file
 ```
 
 ---
